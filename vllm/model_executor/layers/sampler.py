@@ -64,7 +64,7 @@ class Sampler(nn.Module):
         
         # Apply logits processor
         sampling_params = input_metadata.seq_groups[0][1]
-        if input_metadata.logits_processor is not None:
+        if sampling_params.logits_processor is not None:
             logits = sampling_params.logits_processor(input_ids, logits)
 
         # Apply temperature scaling.

@@ -39,6 +39,7 @@ class Sampler(nn.Module):
         hidden_states: torch.Tensor,
         input_metadata: InputMetadata,
         embedding_bias: Optional[torch.Tensor] = None,
+        input_ids: Optional[torch.Tensor] = None,
     ) -> SamplerOutput:
         # Get the hidden states that we use for sampling.
         hidden_states = _prune_hidden_states(hidden_states, input_metadata)
@@ -60,6 +61,11 @@ class Sampler(nn.Module):
         assert len(frequency_penalties) == logits.shape[0]
         logits = _apply_penalties(logits, output_tokens, presence_penalties,
                                   frequency_penalties, self.vocab_size)
+        
+        # Apply logits processor
+        sampling_params = input_metadata.seq_groups[0][1]
+        if input_metadata.logits_processor is not None:
+            logits = sampling_params.logits_processor(input_ids, logits)
 
         # Apply temperature scaling.
         temperatures = _get_temperatures(input_metadata)

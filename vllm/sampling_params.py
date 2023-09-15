@@ -1,5 +1,6 @@
 """Sampling parameters for text generation."""
 from typing import List, Optional, Union
+from transformers import LogitsProcessorList
 
 _SAMPLING_EPS = 1e-5
 
@@ -49,6 +50,7 @@ class SamplingParams:
             tokens after the EOS token is generated.
         max_tokens: Maximum number of tokens to generate per output sequence.
         logprobs: Number of log probabilities to return per output token.
+        logits_processor: LogitsProcessorList to use to modify logits during generation.
     """
 
     def __init__(
@@ -67,6 +69,7 @@ class SamplingParams:
         ignore_eos: bool = False,
         max_tokens: int = 16,
         logprobs: Optional[int] = None,
+        logits_processor: Optional[LogitsProcessorList] = None,
     ) -> None:
         self.n = n
         self.best_of = best_of if best_of is not None else n
@@ -87,6 +90,7 @@ class SamplingParams:
         self.ignore_eos = ignore_eos
         self.max_tokens = max_tokens
         self.logprobs = logprobs
+        self.logits_processor = logits_processor
 
         self._verify_args()
         if self.use_beam_search:
